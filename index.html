@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div id="error"></div>
+  <script>
+    const API_KEY = 'AIzaSyAaJzJNVXjbG4QFp7nvRyt_u4YRPMP6HQY';
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop),
+    });
+    const showError = (message) => document.getElementById("error").innerHTML = message
+
+    const channelId = params.channelId
+    if (!channelId) {
+      const message = 'Please add "<code>channelId=&lt;your-channel-id&gt;</code>" to the URL. ' +
+        'You can find your channel ID here: ' +
+        '<a target="youtube" href="https://www.youtube.com/account_advanced">https://www.youtube.com/account_advanced</a>'
+      showError(message)
+      throw message
+    }
+
+    const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&channelId=${channelId}&eventType=live&type=video`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) throw data.error
+
+        const videoId = data.items[0].id.videoId;
+        console.info(`videoId: ${videoId}`)
+        window.location.href = `https://studio.youtube.com/live_chat?is_popout=1&v=${videoId}`
+      })
+      .catch(error => showError(error.hasOwnProperty("message") ? error.message : error.message));
+  </script>
+</body>
+
+</html>
