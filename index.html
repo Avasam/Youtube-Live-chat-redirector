@@ -26,13 +26,18 @@
       .then(data => {
         if (data.error) throw data.error
 
-        if (data.items.length < 1) throw "Not currently live. Refresh this browser dock once you go live."
+        if (data.items.length < 1) {
+          const studioUrl = `https://studio.youtube.com/channel/${channelId}/livestreaming`
+          throw 'Not currently live. Refresh this browser dock once you go live.' +
+            '<br /><br /> Live streaming Studio: ' +
+            `<a target="youtube" href="${studioUrl}">${studioUrl}</a>`
+        }
 
         const videoId = data.items[0].id.videoId;
         console.info(`videoId: ${videoId}`)
         window.location.href = `https://studio.youtube.com/live_chat?is_popout=1&v=${videoId}`
       })
-      .catch(error => showError(error.hasOwnProperty("message") ? error.message : error));
+      .catch(error => showError(error.hasOwnProperty('message') ? error.message : error));
   </script>
 </body>
 
